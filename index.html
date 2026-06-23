@@ -314,15 +314,16 @@ const desaLayer = L.geoJSON(BATAS_DESA, {
   },
   onEachFeature: function(feature, layer) {
     layer.bindTooltip(feature.properties.nama, {
-      permanent: false,
+      permanent: true,
       direction: 'center',
       className: 'desa-label'
     });
     layer.on('mouseover', function() {
-      this.setStyle({ fillOpacity: 0.18, weight: 2.5 });
+      this.setStyle({ fillOpacity: 0.22, weight: 2.5, color: '#FFE44D' });
+      this.getTooltip().getElement().style.opacity = '1';
     });
     layer.on('mouseout', function() {
-      this.setStyle({ fillOpacity: 0.05, weight: 1.8 });
+      this.setStyle({ fillOpacity: 0.05, weight: 1.8, color: '#FFD700' });
     });
   }
 }).addTo(map);
@@ -342,15 +343,20 @@ const kecamatanBounds = L.geoJSON(BATAS_DESA, {
 const styleEl = document.createElement('style');
 styleEl.textContent = `
   .desa-label {
-    background: rgba(0,0,0,0.65);
-    border: 1px solid #FFD700;
-    border-radius: 4px;
-    color: #FFD700;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 6px;
+    background: rgba(0,0,0,0.55);
+    border: none !important;
+    border-radius: 3px;
+    color: #FFE88A;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 1px 4px;
     white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    box-shadow: none !important;
   }
+  .desa-label::before { display: none !important; }
   .kecamatan-label {
     background: rgba(0,0,0,0.7);
     border: 1px solid #FF8C00;
