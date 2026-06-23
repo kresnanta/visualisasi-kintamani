@@ -166,7 +166,7 @@
   <div class="nav-links">
     <a href="#peta">Peta</a>
     <a href="#sebaran">Sebaran</a>
-    <a href="#perubahan">Perubahan Lahan</a>
+    <a href="#perdesa">Per Desa</a><a href="#perubahan">Perubahan Lahan</a>
   </div>
 </nav>
 
@@ -237,6 +237,110 @@
     </div>
   </div>
 </div>
+
+
+<!-- PER DESA CHART -->
+<section id="perdesa">
+  <div class="sec-header">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="10" width="4" height="10"/><rect x="10" y="6" width="4" height="14"/>
+        <rect x="17" y="2" width="4" height="18"/>
+      </svg>
+      Jumlah Akomodasi per Desa
+    </div>
+    <p class="sec-sub">Distribusi 287 akomodasi di 8 desa aktif — klik bar atau nama desa untuk detail kategori</p>
+  </div>
+  <div class="divider"></div>
+  <div id="desa-chart-wrap" style="background:#fff;border-radius:10px;border:2px solid #ddd6c8;box-shadow:0 4px 20px rgba(0,0,0,.08);overflow:hidden;">
+    <canvas id="desaChart" style="display:block;width:100%;max-height:380px;padding:1rem 1rem 0;box-sizing:border-box;"></canvas>
+    <div id="desa-detail" style="padding:1.2rem 1.5rem;border-top:2px solid #f0ece4;min-height:90px;background:#faf9f5;">
+      <div id="desa-detail-inner" style="display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;align-items:center;">
+        <span style="color:#a09080;font-size:.78rem;font-style:italic;">Klik salah satu desa untuk melihat rincian kategori.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  const DESA_DATA = {"Songan A":{"total":154,"kategori":{"Hotel":41,"Penginapan":18,"Villa":84,"Glamping/Camp":10,"Lainnya":1}},"Batur Tengah":{"total":45,"kategori":{"Hotel":27,"Penginapan":3,"Glamping/Camp":4,"Lainnya":2,"Villa":9}},"Kedisan":{"total":26,"kategori":{"Hotel":10,"Villa":14,"Glamping/Camp":2}},"Songan B":{"total":25,"kategori":{"Hotel":7,"Glamping/Camp":3,"Penginapan":2,"Villa":13}},"Pinggan":{"total":14,"kategori":{"Villa":7,"Penginapan":3,"Hotel":4}},"Buahan":{"total":11,"kategori":{"Penginapan":1,"Hotel":5,"Villa":5}},"Batur Utara":{"total":10,"kategori":{"Hotel":8,"Lainnya":1,"Villa":1}},"Kintamani":{"total":2,"kategori":{"Hotel":1,"Penginapan":1}}};
+
+  const CAT_COLOR = {
+    'Villa':'#2e7d48',
+    'Hotel':'#1a6fa8',
+    'Penginapan':'#b52b2b',
+    'Glamping/Camp':'#7b35a8',
+    'Lainnya':'#888'
+  };
+
+  const labels = Object.keys(DESA_DATA);
+  const totals = labels.map(d => DESA_DATA[d].total);
+  
+  const ctx = document.getElementById('desaChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Jumlah Akomodasi',
+        data: totals,
+        backgroundColor: labels.map((_, i) => `hsl(${30 + i*18}, 70%, ${48 - i*2}%)`),
+        borderWidth: 0,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2.5,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.raw} akomodasi`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", weight: '600', size: 12 }, color: '#2c2416' }
+        },
+        y: {
+          grid: { color: '#f0ece4' },
+          ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }, color: '#9a8070' },
+          beginAtZero: true
+        }
+      },
+      onClick: (evt, elements) => {
+        if (elements.length) showDetail(labels[elements[0].index]);
+      }
+    }
+  });
+
+  function showDetail(desa) {
+    const d = DESA_DATA[desa];
+    let html = `<div style="font-weight:800;font-size:.9rem;color:#1c1108;margin-right:.8rem;">${desa} <span style="font-weight:500;color:#888;font-size:.78rem;">(${d.total} total)</span></div>`;
+    for (const [kat, cnt] of Object.entries(d.kategori)) {
+      const col = CAT_COLOR[kat] || '#888';
+      const pct = Math.round(cnt / d.total * 100);
+      html += `<div style="display:flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:600;">
+        <span style="width:.65rem;height:.65rem;border-radius:50%;background:${col};flex-shrink:0;display:inline-block;"></span>
+        <span style="color:${col}">${kat}</span>
+        <span style="color:#2c2416;font-weight:800;">${cnt}</span>
+        <span style="color:#aaa;font-weight:400;">(${pct}%)</span>
+      </div>`;
+    }
+    document.getElementById('desa-detail-inner').innerHTML = html;
+  }
+
+  // Show Songan A by default
+  showDetail('Songan A');
+})();
+</script>
 
 <!-- MAPBIOMAS GIF -->
 <section id="perubahan">
